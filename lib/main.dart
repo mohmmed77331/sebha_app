@@ -11,119 +11,66 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const TextFieldTask(),
+      home: const MainPage(),
     );
   }
 }
 
-class TextFieldTask extends StatefulWidget {
-  const TextFieldTask({super.key});
+class MainPage extends StatefulWidget {
+  const MainPage({super.key});
 
   @override
-  State<TextFieldTask> createState() => _TextFieldTaskState();
+  State<MainPage> createState() => _MainPageState();
 }
 
-class _TextFieldTaskState extends State<TextFieldTask> {
-  TextEditingController field1 = TextEditingController();
-  TextEditingController field2 = TextEditingController();
+class _MainPageState extends State<MainPage> {
+  int currentIndex = 0;
+
+ 
+  final List<String> titles = [
+    "Home",
+    "Search",
+    "Settings",
+    "Account",
+  ];
+
+  
+  final List<Widget> pages = const [
+    Center(child: Text("This is Home Page", style: TextStyle(fontSize: 22))),
+    Center(child: Text("This is Search Page", style: TextStyle(fontSize: 22))),
+    Center(child: Text("This is Settings Page", style: TextStyle(fontSize: 22))),
+    Center(child: Text("This is Account Page", style: TextStyle(fontSize: 22))),
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("TextField Assignment"),
+        title: Text(titles[currentIndex]),
         backgroundColor: Colors.indigo,
         centerTitle: true,
       ),
 
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
+      body: pages[currentIndex],
 
-            // TextField 1
-            TextField(
-              controller: field1,
-              decoration: const InputDecoration(
-                labelText: "Enter Text",
-                border: OutlineInputBorder(),
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            // TextField 2
-            TextField(
-              controller: field2,
-              decoration: const InputDecoration(
-                labelText: "Result",
-                border: OutlineInputBorder(),
-              ),
-            ),
-
-            const SizedBox(height: 30),
-
-            // زر النسخ
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  field2.text = field1.text;
-                });
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 240, 237, 91),
-                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
-              ),
-              child: const Text("Copy Text"),
-            ),
-
-            const SizedBox(height: 30),
-
-            // زر الانتقال لصفحة جديدة وتمرير البيانات
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => SecondPage(
-                      textValue: field1.text,
-                    ),
-                  ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green,
-                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
-              ),
-              child: const Text("Go To Next Page"),
-            ),
-          ],
-        ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: currentIndex,
+        selectedItemColor: Colors.indigo,
+        unselectedItemColor: Colors.grey,
+        showUnselectedLabels: true,
+        onTap: (index) {
+          setState(() {
+            currentIndex = index;
+          });
+        },
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+          BottomNavigationBarItem(icon: Icon(Icons.search), label: "Search"),
+          BottomNavigationBarItem(icon: Icon(Icons.settings), label: "Settings"),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Account"),
+        ],
       ),
     );
   }
 }
 
-
-class SecondPage extends StatelessWidget {
-  final String textValue;
-
-  const SecondPage({super.key, required this.textValue});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Second Page"),
-        backgroundColor: Colors.green,
-      ),
-      body: Center(
-        child: Text(
-          "Received Text:\n$textValue",
-          style: const TextStyle(fontSize: 24),
-          textAlign: TextAlign.center,
-        ),
-      ),
-    );
-  }
-}
