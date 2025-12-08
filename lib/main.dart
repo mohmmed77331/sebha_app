@@ -1,9 +1,14 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
+/// ----------------------
+///  APP ROOT
+/// ----------------------
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -11,184 +16,244 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const MainPage(),
+      home: const SignInPage(),
     );
   }
 }
 
-class MainPage extends StatefulWidget {
-  const MainPage({super.key});
 
-  @override
-  State<MainPage> createState() => _MainPageState();
+Future<File> getFile() async {
+  final dir = await getApplicationSupportDirectory();
+  final file = File("${dir.path}/sign_file.txt");
+  if (!await file.exists()) {
+    await file.create(recursive: true);
+  }
+  return file;
 }
 
-class _MainPageState extends State<MainPage> {
-  int currentIndex = 0;
 
-  // Titles of pages
-  final List<String> titles = [
-    "Home",
-    "Search",
-    "Settings",
-    "Account",
-  ];
 
-  // Content pages
-  late final List<Widget> pages = [
-    HomePageContent(),
-    SearchPageContent(),
-    const SettingsPageContent(),
-    const AccountPageContent(),
-  ];
+/// SAVE()  ➜ إضافة مستخدم جديد أو تحديث كلمة المرور
+Future<void> save(String username, String password, String department) async {
+  final f = await getFile();
+  final line = "username_$username, password_$password, department_$department\n";
+  await f.writeAsString(line, mode: FileMode.append);
+}
+
+/// CHECKVALUE()  ➜ فحص المستخدم داخل الملف
+Future<bool> checkValue(String username, String password) async {
+  final f = await getFile();
+  final lines = await f.readAsLines();
+
+  for (var line in lines) {
+    if (line.contains("username_$username") &&
+        line.contains("password_$password")) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/// CHANGE PASSWORD  ➜ يعتمد على checkValue + save
+Future<bool> changePassword(
+    String username, String oldPass, String newPass) async {
+  final f = await getFile();
+  final lines = await f.readAsLines();
+
+  bool found = false;
+  List<String> newData = [];
+
+  for (var line in lines) {
+    if (line.contains("username_$username") &&
+        line.contains("password_$oldPass")) {
+      found = true;
+
+      // استخراج التخصص
+      final dep = line.split(",")[2].trim().replaceAll("department_", "");
+
+      // السطر الجديد
+      final updated =
+          "username_$username, password_$newPass, department_$dep";
+      newData.add(updated);
+    } else {
+      newData.add(line);
+    }
+  }
+
+  if (found) {
+    await f.writeAsString(newData.join("\n"));
+  }
+
+  return found;
+}
+
+
+class SignInPage extends StatefulWidget {
+  const SignInPage({super.key});
+
+  @override
+  State<SignInPage> createState() => _SignInPageState();
+}
+
+class _SignInPageState extends State<SignInPage> {
+  final user = TextEditingController();
+  final pass = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(titles[currentIndex]),
-        centerTitle: true,
-        backgroundColor: Colors.indigo,
-      ),
-
+      appBar: AppBar(title: const Text("Sign In")),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: pages[currentIndex],
-      ),
-
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: currentIndex,
-        selectedItemColor: Colors.indigo,
-        unselectedItemColor: Colors.grey,
-        showUnselectedLabels: true,
-        onTap: (index) {
-          setState(() => currentIndex = index);
-        },
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-          BottomNavigationBarItem(icon: Icon(Icons.search), label: "Search"),
-          BottomNavigationBarItem(icon: Icon(Icons.settings), label: "Settings"),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Account"),
-        ],
-      ),
-    );
-  }
-}
-
-//////////////////////////////////////////////////////
-//                 PAGE 1 – HOME
-//////////////////////////////////////////////////////
-
-class HomePageContent extends StatefulWidget {
-  @override
-  State<HomePageContent> createState() => _HomePageContentState();
-}
-
-class _HomePageContentState extends State<HomePageContent> {
-  TextEditingController field1 = TextEditingController();
-  TextEditingController field2 = TextEditingController();
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        TextField(
-          controller: field1,
-          decoration: const InputDecoration(
-            labelText: "Enter Text",
-            border: OutlineInputBorder(),
-          ),
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            TextField(controller: user, decoration: const InputDecoration(labelText: "Username")),
+            TextField(controller: pass, decoration: const InputDecoration(labelText: "Password")),
+            const SizedBox(height: 25),
+            ElevatedButton(
+              onPressed: () async {
+                bool ok = await checkValue(user.text, pass.text);
+                if (ok) {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => HomePage(username: user.text)));
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("User Not Found")));
+                }
+              },
+              child: const Text("Sign In"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (_) => const SignUpPage()));
+              },
+              child: const Text("Create Account"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (_) => const ResetPasswordPage()));
+              },
+              child: const Text("Reset Password"),
+            )
+          ],
         ),
-
-        const SizedBox(height: 20),
-
-        TextField(
-          controller: field2,
-          decoration: const InputDecoration(
-            labelText: "Result",
-            border: OutlineInputBorder(),
-          ),
-        ),
-
-        const SizedBox(height: 25),
-
-        ElevatedButton(
-          onPressed: () {
-            setState(() {
-              field2.text = field1.text;
-            });
-          },
-          child: const Text("Copy Text"),
-        ),
-      ],
-    );
-  }
-}
-
-//////////////////////////////////////////////////////
-//              PAGE 2 – SEARCH LISTVIEW
-//////////////////////////////////////////////////////
-
-class SearchPageContent extends StatelessWidget {
-  SearchPageContent({super.key});
-
-  final List<String> items = [
-    "Apple",
-    "Banana",
-    "Orange",
-    "Grapes",
-    "Mango",
-    "Watermelon",
-    "Strawberry",
-    "Kiwi",
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: items.length,
-      itemBuilder: (context, index) {
-        return ListTile(
-          leading: const Icon(Icons.list),
-          title: Text(items[index]),
-          trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-        );
-      },
-    );
-  }
-}
-
-//////////////////////////////////////////////////////
-//               PAGE 3 – SETTINGS
-//////////////////////////////////////////////////////
-
-class SettingsPageContent extends StatelessWidget {
-  const SettingsPageContent({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text(
-        "Settings Page",
-        style: TextStyle(fontSize: 22),
       ),
     );
   }
 }
 
-//////////////////////////////////////////////////////
-//               PAGE 4 – ACCOUNT
-//////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
+///
+///
+///                SIGN UP PAGE
+///
+////////////////////////////////////////////////////////////////////
 
-class AccountPageContent extends StatelessWidget {
-  const AccountPageContent({super.key});
+class SignUpPage extends StatefulWidget {
+  const SignUpPage({super.key});
+
+  @override
+  State<SignUpPage> createState() => _SignUpPageState();
+}
+
+class _SignUpPageState extends State<SignUpPage> {
+  final user = TextEditingController();
+  final pass = TextEditingController();
+  final dep = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text(
-        "Account Page",
-        style: TextStyle(fontSize: 22),
+    return Scaffold(
+      appBar: AppBar(title: const Text("Sign Up")),
+      body: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            TextField(controller: user, decoration: const InputDecoration(labelText: "Username")),
+            TextField(controller: pass, decoration: const InputDecoration(labelText: "Password")),
+            TextField(controller: dep, decoration: const InputDecoration(labelText: "Department")),
+            const SizedBox(height: 25),
+            ElevatedButton(
+              onPressed: () async {
+                await save(user.text, pass.text, dep.text);
+                ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("User Saved")));
+              },
+              child: const Text("Save"),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+////////////////////////////////////////////////////////////////////
+///
+///
+///                RESET PASSWORD PAGE
+///
+////////////////////////////////////////////////////////////////////
+
+class ResetPasswordPage extends StatefulWidget {
+  const ResetPasswordPage({super.key});
+
+  @override
+  State<ResetPasswordPage> createState() => _ResetPasswordPageState();
+}
+
+class _ResetPasswordPageState extends State<ResetPasswordPage> {
+  final user = TextEditingController();
+  final oldPass = TextEditingController();
+  final newPass = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("Reset Password")),
+      body: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            TextField(controller: user, decoration: const InputDecoration(labelText: "Username")),
+            TextField(controller: oldPass, decoration: const InputDecoration(labelText: "Old Password")),
+            TextField(controller: newPass, decoration: const InputDecoration(labelText: "New Password")),
+            const SizedBox(height: 20),
+            ElevatedButton(
+                onPressed: () async {
+                  bool ok = await changePassword(
+                      user.text, oldPass.text, newPass.text);
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text(ok ? "Password Updated" : "Wrong Old Password")));
+                },
+                child: const Text("Update"))
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+////////////////////////////////////////////////////////////////////
+///
+///
+///                HOME PAGE
+///
+////////////////////////////////////////////////////////////////////
+
+class HomePage extends StatelessWidget {
+  final String username;
+  const HomePage({super.key, required this.username});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("Home Page")),
+      body: Center(
+        child: Text("Welcome, $username",
+            style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
       ),
     );
   }
