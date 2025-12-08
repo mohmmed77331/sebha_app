@@ -1,7 +1,3 @@
-// lib/main.dart
-// Final corrected single-file Shiyakah app.
-// No external packages. No SharedPreferences.
-// Paste into lib/main.dart and run.
 
 import 'package:flutter/material.dart';
 import 'dart:async';
@@ -94,17 +90,17 @@ class _ShiyakahAppState extends State<ShiyakahApp> {
       ),
       Product(
         id: 'p4',
-        name: 'جاكيت جلد بني',
+        name: 'جاكيت جلد ',
         desc: 'جاكيت كلاسيكي بلمسة عصرية ولمعان طبيعي.',
         price: 320.00,
-        assetImage: 'images/shirt4.png',
+        assetImage: 'images/man (1).png',
       ),
       Product(
         id: 'p5',
-        name: 'تنورة بيج طويلة',
+        name: 'تنورة  طويلة',
         desc: 'تنورة أنثوية ناعمة تناسب الإطلالات اليومية.',
         price: 120.00,
-        assetImage: 'images/shirt5.png',
+        assetImage: 'images/skirt.png',
       ),
     ];
 
@@ -446,7 +442,7 @@ class _MainScaffoldState extends State<MainScaffold> {
               widget.setDark(v);
               setState(() {}); // local refresh
             },
-            title: const Text('الوضع الليلي'),
+            title: const Text('  الوضع الليلي   '),
             secondary: const Icon(Icons.dark_mode),
           ),
           const Spacer(),
@@ -592,7 +588,7 @@ class ProductDetailsPage extends StatelessWidget {
         const SizedBox(height: 8),
         Text(product.desc),
         const SizedBox(height: 16),
-        ElevatedButton.icon(onPressed: () { onAddToCart(product); ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('أضيف ${product.name} إلى السلة'))); }, icon: const Icon(Icons.add_shopping_cart), label: const Text('أضف إلى السلة'), style: ElevatedButton.styleFrom(backgroundColor: accent)),
+        ElevatedButton.icon(onPressed: () { onAddToCart(product); ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('أضيف ${product.name} إلى السلة'))); }, icon: const Icon(Icons.add_shopping_cart), label: const Text('أضف إلى السلة'), style: ElevatedButton.styleFrom(backgroundColor: accent,foregroundColor: const Color.fromARGB(255, 0, 0, 0 ))),
       ])),
     );
   }
@@ -627,7 +623,7 @@ class CartPage extends StatelessWidget {
         Padding(padding: const EdgeInsets.all(12.0), child: Column(children: [
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('المجموع', style: Theme.of(context).textTheme.titleMedium), Text('${total.toStringAsFixed(2)} ر.س', style: TextStyle(color: accent, fontWeight: FontWeight.bold))]),
           const SizedBox(height: 8),
-          Row(children: [Expanded(child: ElevatedButton(onPressed: () { clearCart(); ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('تم إتمام الطلب (محاكاة)'))); Navigator.of(context).pop(); }, style: ElevatedButton.styleFrom(backgroundColor: accent), child: const Text('إتمام الطلب')))]),
+          Row(children: [Expanded(child: ElevatedButton(onPressed: () { clearCart(); ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('تم إتمام الطلب (محاكاة)'))); Navigator.of(context).pop(); }, style: ElevatedButton.styleFrom(backgroundColor: accent,foregroundColor: const Color.fromARGB(255, 0, 0, 0)), child: const Text('إتمام الطلب')))]),
         ]))
       ]),
     );
@@ -701,7 +697,7 @@ class AccountScreen extends StatefulWidget {
   State<AccountScreen> createState() => _AccountScreenState();
 }
 class _AccountScreenState extends State<AccountScreen> {
-  final TextEditingController nameCtrl = TextEditingController(text: 'نور الهدى');
+  final TextEditingController nameCtrl = TextEditingController(text: 'أحمد سعد ');
   final TextEditingController emailCtrl = TextEditingController(text: 'email@shiyakah.com');
   final TextEditingController phoneCtrl = TextEditingController(text: '+966 5xxxxxxx');
   final TextEditingController t1 = TextEditingController();
@@ -726,7 +722,7 @@ class _AccountScreenState extends State<AccountScreen> {
         const SizedBox(height: 18),
         const Divider(),
         const SizedBox(height: 8),
-        Text('تجربة TextField (نسخ + تمرير)', style: theme.textTheme.titleMedium),
+        Text(' TextField ', style: theme.textTheme.titleMedium),
         const SizedBox(height: 8),
         TextField(controller: t1, decoration: const InputDecoration(labelText: 'اكتب هنا')),
         const SizedBox(height: 8),
@@ -767,17 +763,17 @@ class CVPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('السيرة الذاتية')),
       body: SingleChildScrollView(padding: const EdgeInsets.all(14), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Center(child: Column(children: [const CircleAvatar(radius: 56, child: Icon(Icons.person, size: 56)), const SizedBox(height: 8), Text('الاسم: نور الهدى', style: theme.textTheme.titleLarge), const SizedBox(height: 6), Text('مصممة أزياء', style: theme.textTheme.bodyLarge)])),
+        Center(child: Column(children: [const CircleAvatar(radius: 56, child: Icon(Icons.person, size: 56)), const SizedBox(height: 8), Text('الاسم: أحمد سعد', style: theme.textTheme.titleLarge), const SizedBox(height: 6), Text('مصمم أزياء', style: theme.textTheme.bodyLarge)])),
         const SizedBox(height: 14),
         const Divider(),
         const SizedBox(height: 10),
         const Text('نبذة', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         const SizedBox(height: 6),
-        const Text('مصممة أزياء متخصصة في الملابس الجاهزة، تملك خبرة في تصميم تشكيلات عصرية ومتابعة خطوط الموضة.'),
+        const Text('مصمم أزياء متخصص في الملابس الجاهزة، يملك خبرة في تصميم تشكيلات عصرية ومتابعة خطوط الموضة.'),
         const SizedBox(height: 12),
         const Text('المهارات', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         const SizedBox(height: 6),
-        Wrap(spacing: 8, children: const [Chip(label: Text('Flutter')), Chip(label: Text('Design')), Chip(label: Text('Tailoring'))]),
+        Wrap(spacing: 8, children: const [Chip(label: Text('elegance')), Chip(label: Text('Design')), Chip(label: Text('Tailoring'))]),
       ])),
     );
   }
