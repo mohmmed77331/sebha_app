@@ -1,134 +1,101 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(MyCVApp());
+  runApp(const MyApp());
 }
 
-class MyCVApp extends StatelessWidget {
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'My CV',
-      theme: ThemeData(
-        primarySwatch: Colors.deepPurple,
-        fontFamily: 'Montserrat',
-      ),
-      home: CVScreen(),
+      home: const TextFieldTask(),
     );
   }
 }
 
-class CVScreen extends StatelessWidget {
+class TextFieldTask extends StatefulWidget {
+  const TextFieldTask({super.key});
+
+  @override
+  State<TextFieldTask> createState() => _TextFieldTaskState();
+}
+
+class _TextFieldTaskState extends State<TextFieldTask> {
+  TextEditingController field1 = TextEditingController();
+  TextEditingController field2 = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
-      body: SingleChildScrollView(
+      appBar: AppBar(
+        title: const Text("TextField Assignment"),
+        backgroundColor: Colors.indigo,
+        centerTitle: true,
+      ),
+
+      body: Padding(
+        padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            // Header with photo
-            Container(
-              color: Colors.deepPurple,
-              width: double.infinity,
-              padding: EdgeInsets.symmetric(vertical: 50),
-              child: Column(
-                children: [
-                  CircleAvatar(
-                    radius: 65,
-                    backgroundImage: AssetImage('images/file_000000002d606246adeaab98f3346e0e.png'),
-                  ),
-                  SizedBox(height: 15),
-                  Text(
-                    ' محمد أحمد حبيش ',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.2,
-                    ),
-                  ),
-                  Text(
-                    'مهندس برمجيات | مطور Flutter',
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 16,
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.email, color: Colors.white70, size: 18),
-                      SizedBox(width: 5),
-                      Text(
-                        'email@example.com',
-                        style: TextStyle(color: Colors.white70),
-                      ),
-                      SizedBox(width: 20),
-                      Icon(Icons.phone, color: Colors.white70, size: 18),
-                      SizedBox(width: 5),
-                      Text(
-                        '+967 784XXXXXXX',
-                        style: TextStyle(color: Colors.white70),
-                      ),
-                    ],
-                  ),
-                ],
+
+            // TextField 1
+            TextField(
+              controller: field1,
+              decoration: const InputDecoration(
+                labelText: "Enter Text",
+                border: OutlineInputBorder(),
               ),
             ),
 
-            // Body
-            Padding(
-              padding: EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SectionTitle(title: 'نبذة عني'),
-                  Text(
-                    'أنا مطور تطبيقات Flutter مع خبرة في بناء تطبيقات جذابة وسريعة الأداء، أحب التعلم وتجربة التقنيات الجديدة، وأسعى دائماً لتحسين مهاراتي في التصميم والتطوير.',
-                    style: TextStyle(fontSize: 16, height: 1.6, color: Colors.grey[800]),
-                  ),
-                  SizedBox(height: 20),
-                  SectionTitle(title: 'المهارات'),
-                  Wrap(
-                    spacing: 10,
-                    runSpacing: 10,
-                    children: [
-                      SkillChip(label: 'Flutter'),
-                      SkillChip(label: 'Dart'),
-                      SkillChip(label: 'Firebase'),
-                      SkillChip(label: 'UI/UX Design'),
-                      SkillChip(label: 'Git & GitHub'),
-                      SkillChip(label: 'REST API'),
-                    ],
-                  ),
-                  SizedBox(height: 20),
-                  SectionTitle(title: 'الخبرات العملية'),
-                  ExperienceCard(
-                    title: 'مطوّر Flutter',
-                    company: 'شركة التقنية الحديثة',
-                    duration: '2022 - الآن',
-                    description:
-                        'تطوير وصيانة تطبيقات الجوال باستخدام Flutter وDart مع التركيز على الأداء والتصميم الجميل وتجربة المستخدم الممتازة.',
-                  ),
-                  ExperienceCard(
-                    title: 'مطور ويب مبتدئ',
-                    company: 'شركة الويب الذكي',
-                    duration: '2020 - 2022',
-                    description:
-                        'المشاركة في تطوير واجهات المستخدم والتفاعل مع APIs باستخدام HTML, CSS, JavaScript وتحسين تجربة المستخدم.',
-                  ),
-                  SizedBox(height: 20),
-                  SectionTitle(title: 'التعليم'),
-                  ExperienceCard(
-                    title: 'بكالوريوس علوم الحاسوب',
-                    company: 'جامعة التقنية',
-                    duration: '2021 - 2025',
-                    description: 'تخصص علوم الحاسوب مع التركيز على تطوير البرمجيات وتحليل الأنظمة.',
-                  ),
-                ],
+            const SizedBox(height: 20),
+
+            // TextField 2
+            TextField(
+              controller: field2,
+              decoration: const InputDecoration(
+                labelText: "Result",
+                border: OutlineInputBorder(),
               ),
+            ),
+
+            const SizedBox(height: 30),
+
+            // زر النسخ
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  field2.text = field1.text;
+                });
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromARGB(255, 240, 237, 91),
+                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+              ),
+              child: const Text("Copy Text"),
+            ),
+
+            const SizedBox(height: 30),
+
+            // زر الانتقال لصفحة جديدة وتمرير البيانات
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SecondPage(
+                      textValue: field1.text,
+                    ),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+              ),
+              child: const Text("Go To Next Page"),
             ),
           ],
         ),
@@ -137,86 +104,26 @@ class CVScreen extends StatelessWidget {
   }
 }
 
-class SectionTitle extends StatelessWidget {
-  final String title;
-  SectionTitle({required this.title});
+
+class SecondPage extends StatelessWidget {
+  final String textValue;
+
+  const SecondPage({super.key, required this.textValue});
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      child: Text(
-        title,
-        style: TextStyle(
-          fontSize: 22,
-          fontWeight: FontWeight.bold,
-          color: Colors.deepPurple,
-          letterSpacing: 1.1,
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Second Page"),
+        backgroundColor: Colors.green,
+      ),
+      body: Center(
+        child: Text(
+          "Received Text:\n$textValue",
+          style: const TextStyle(fontSize: 24),
+          textAlign: TextAlign.center,
         ),
       ),
     );
   }
 }
-
-class SkillChip extends StatelessWidget {
-  final String label;
-  SkillChip({required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Chip(
-      label: Text(
-        label,
-        style: TextStyle(color: Colors.deepPurple[900], fontWeight: FontWeight.w600),
-      ),
-      backgroundColor: Colors.deepPurple[50],
-      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-    );
-  }
-}
-
-class ExperienceCard extends StatelessWidget {
-  final String title;
-  final String company;
-  final String duration;
-  final String description;
-
-  ExperienceCard(
-      {required this.title,
-      required this.company,
-      required this.duration,
-      required this.description});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 4,
-      margin: EdgeInsets.symmetric(vertical: 10),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      child: Padding(
-        padding: EdgeInsets.all(15),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.deepPurple),
-            ),
-            SizedBox(height: 2),
-            Text(
-              '$company | $duration',
-              style: TextStyle(color: Colors.grey[600], fontSize: 14),
-            ),
-            SizedBox(height: 8),
-            Text(description,
-                style: TextStyle(fontSize: 15, height: 1.5, color: Colors.grey[800])),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
